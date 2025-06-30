@@ -6,9 +6,9 @@ plugins {
 }
 
 android {
-    namespace = "com.example.tencent_cloud_tts_server"
+    namespace = "io.github.mirus.tencent_cloud_tts_server"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "29.0.13599879"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -20,8 +20,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.tencent_cloud_tts_server"
+        applicationId = "io.github.mirus.tencent_cloud_tts_server"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -41,4 +40,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation(files("libs/libqcloudtts-release.aar"))
 }
