@@ -20,6 +20,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
+
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -43,19 +47,30 @@ data class SynthesizeResponse(
 @Serializable
 data class Response(
     @SerialName("Audio")
-    val audio: String,
+    val audio: String? = null,
 
     @SerialName("RequestId")
     val requestId: String,
 
     @SerialName("SessionId")
-    val sessionId: String,
+    val sessionId: String? = null,
 
     @SerialName("Subtitles")
-    val subtitles: JsonArray,
+    val subtitles: JsonArray? = null,
+
+    @SerialName("Error")
+    val error: Error? = null,
 )
 
-@Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
+@Serializable
+data class Error(
+    @SerialName("Code")
+    val code: String,
+
+    @SerialName("Message")
+    val message: String,
+)
+
 private fun ByteArray.hmacSha256(msg: String): ByteArray {
     val mac = Mac.getInstance("HmacSHA256")
     val secretKeySpec = SecretKeySpec(this, mac.algorithm)
@@ -63,19 +78,20 @@ private fun ByteArray.hmacSha256(msg: String): ByteArray {
     return mac.doFinal(msg.toByteArray(StandardCharsets.UTF_8))
 }
 
-class TencentTTSController {
+class TencentTTSController(context: Context) {
     companion object {
         private const val SERVICE = "tts"
         private const val CONTENT_TYPE = "application/json; charset=utf-8"
         private const val HOST = "$SERVICE.tencentcloudapi.com"
 
+        private const val KEY_SECRET_ID = "flutter.secretId"
+        private const val KEY_SECRET_KEY = "flutter.secretKey"
+
         private val client: OkHttpClient = OkHttpClient()
     }
 
-    private val secretId: String = ""
-    private val secretKey: String = ""
+    private val prefs: SharedPreferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
 
-    @Throws(IOException::class)
     fun doRequest(
         body: SynthesizeRequest,
     ): SynthesizeResponse {
@@ -86,7 +102,6 @@ class TencentTTSController {
         return Json.decodeFromString<SynthesizeResponse>(responseJson)
     }
 
-    @Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
     fun buildRequest(body: String): Request {
         val timestamp = Instant.now().epochSecond
         val auth = getAuth(timestamp, body)
@@ -103,7 +118,6 @@ class TencentTTSController {
             .build()
     }
 
-    @Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
     private fun getAuth(
         timestamp: Long,
         body: String
@@ -136,6 +150,7 @@ class TencentTTSController {
             $hashedCanonicalRequest
         """.trimIndent()
 
+        val secretKey = prefs.getString(KEY_SECRET_KEY, null)
         val signature = "TC3$secretKey"
             .toByteArray(StandardCharsets.UTF_8)
             .hmacSha256(date)
@@ -144,10 +159,10 @@ class TencentTTSController {
             .hmacSha256(stringToSign)
             .toHexString()
 
+        val secretId = prefs.getString(KEY_SECRET_ID, null)
         return "TC3-HMAC-SHA256 Credential=$secretId/$credentialScope, SignedHeaders=content-type;host, Signature=$signature"
     }
 
-    @Throws(NoSuchAlgorithmException::class)
     fun sha256Hex(s: String): String {
         val md = MessageDigest.getInstance("SHA-256")
         val b = s.toByteArray(StandardCharsets.UTF_8)
@@ -156,13 +171,22 @@ class TencentTTSController {
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    fun synthesize(text: String): ByteArray {
+    fun synthesize(text: String): Result<ByteArray> {
         val response = doRequest(SynthesizeRequest(
             text = text,
             sessionId = Uuid.random().toString()
         ))
+        val error = response.response.error
+        if (error != null) {
+            return Result.failure(IllegalStateException(error.toString()))
+        }
+
         val audioString = response.response.audio
+        if (audioString == null) {
+            return Result.failure("audio is null")
+        }
+
         val audioByteArray = Base64.Default.decode(audioString)
-        return audioByteArray
+        return Result.success(audioByteArray)
     }
 }

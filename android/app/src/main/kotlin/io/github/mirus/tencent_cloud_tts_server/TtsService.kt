@@ -15,10 +15,13 @@ class HttpTtsService : TextToSpeechService() {
     companion object {
         const val DEFAULT_VOICE_NAME = "DEFAULT"
     }
-    private val tencentTtsController: TencentTTSController = TencentTTSController()
+
+    private lateinit var tencentTtsController: TencentTTSController
 
     override fun onCreate() {
         super.onCreate()
+
+        tencentTtsController = TencentTTSController(this)
     }
 
     override fun onGetDefaultVoiceNameFor(lang: String, country: String, variant: String): String {
@@ -71,10 +74,14 @@ class HttpTtsService : TextToSpeechService() {
         if (callback.start(SAMPLE_RATE, AudioFormat.ENCODING_PCM_16BIT, 1) == TextToSpeech.ERROR) {
             Log.e("callback.start", "unknown error")
         }
-        val bytes = runBlocking {
-            val bytes = tencentTtsController.synthesize(request.charSequenceText.toString())
-            return@runBlocking bytes
-        }
+        val bytes = tencentTtsController
+            .synthesize(request.charSequenceText.toString())
+            .getOrElse { err ->
+                // TODO: Push notification
+                Log.e("onSynthesizeText", err.toString())
+                callback.error()
+                return
+            }
 
         var offset = 0
         while (offset < bytes.size) {
@@ -87,7 +94,7 @@ class HttpTtsService : TextToSpeechService() {
             offset += chunkSize
         }
 
-        if(callback.done() == TextToSpeech.ERROR) {
+        if (callback.done() == TextToSpeech.ERROR) {
             Log.e("callback.done", "unknown error")
             return
         }
