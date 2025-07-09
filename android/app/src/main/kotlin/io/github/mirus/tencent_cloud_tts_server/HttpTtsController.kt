@@ -1,10 +1,6 @@
 package io.github.mirus.tencent_cloud_tts_server
 
 import java.nio.charset.StandardCharsets
-import java.security.InvalidKeyException
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
-import java.io.IOException
 import java.time.Instant
 import java.time.ZoneId
 
@@ -22,7 +18,6 @@ import kotlinx.serialization.json.JsonArray
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -92,7 +87,7 @@ class TencentTTSController(context: Context) {
 
     private val prefs: SharedPreferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
 
-    fun doRequest(
+    private fun doRequest(
         body: SynthesizeRequest,
     ): SynthesizeResponse {
         val requestJson = Json.encodeToString(body)
@@ -102,7 +97,7 @@ class TencentTTSController(context: Context) {
         return Json.decodeFromString<SynthesizeResponse>(responseJson)
     }
 
-    fun buildRequest(body: String): Request {
+    private fun buildRequest(body: String): Request {
         val timestamp = Instant.now().epochSecond
         val auth = getAuth(timestamp, body)
 
@@ -163,13 +158,6 @@ class TencentTTSController(context: Context) {
         return "TC3-HMAC-SHA256 Credential=$secretId/$credentialScope, SignedHeaders=content-type;host, Signature=$signature"
     }
 
-    fun sha256Hex(s: String): String {
-        val md = MessageDigest.getInstance("SHA-256")
-        val b = s.toByteArray(StandardCharsets.UTF_8)
-        val d = md.digest(b)
-        return d.toHexString()
-    }
-
     @OptIn(ExperimentalUuidApi::class)
     fun synthesize(text: String): Result<ByteArray> {
         val response = doRequest(SynthesizeRequest(
@@ -182,9 +170,7 @@ class TencentTTSController(context: Context) {
         }
 
         val audioString = response.response.audio
-        if (audioString == null) {
-            return Result.failure("audio is null")
-        }
+            ?: return Result.failure(IllegalStateException("audio is null"))
 
         val audioByteArray = Base64.Default.decode(audioString)
         return Result.success(audioByteArray)

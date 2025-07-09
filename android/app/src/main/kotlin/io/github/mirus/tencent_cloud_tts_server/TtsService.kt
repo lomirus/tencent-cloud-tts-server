@@ -7,8 +7,6 @@ import android.util.Log
 import java.util.Locale
 import kotlin.math.min
 
-import kotlinx.coroutines.runBlocking
-
 const val SAMPLE_RATE = 16000
 
 class HttpTtsService : TextToSpeechService() {
@@ -73,6 +71,7 @@ class HttpTtsService : TextToSpeechService() {
         }
         if (callback.start(SAMPLE_RATE, AudioFormat.ENCODING_PCM_16BIT, 1) == TextToSpeech.ERROR) {
             Log.e("callback.start", "unknown error")
+            return
         }
         val bytes = tencentTtsController
             .synthesize(request.charSequenceText.toString())
