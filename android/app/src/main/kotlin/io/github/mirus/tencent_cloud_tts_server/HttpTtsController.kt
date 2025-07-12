@@ -31,6 +31,9 @@ data class SynthesizeRequest(
 
     @SerialName("SessionId")
     val sessionId: String,
+
+    @SerialName("VoiceType")
+    val voiceType: Long,
 )
 
 @Serializable
@@ -81,6 +84,7 @@ class TencentTTSController(context: Context) {
 
         private const val KEY_SECRET_ID = "flutter.secretId"
         private const val KEY_SECRET_KEY = "flutter.secretKey"
+        private const val KEY_VOICE_TYPE = "flutter.voiceType"
 
         private val client: OkHttpClient = OkHttpClient()
     }
@@ -162,7 +166,8 @@ class TencentTTSController(context: Context) {
     fun synthesize(text: String): Result<ByteArray> {
         val response = doRequest(SynthesizeRequest(
             text = text,
-            sessionId = Uuid.random().toString()
+            sessionId = Uuid.random().toString(),
+            voiceType = prefs.getLong(KEY_VOICE_TYPE, 0)
         ))
         val error = response.response.error
         if (error != null) {
