@@ -17,7 +17,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 
 import android.content.Context
-import android.content.SharedPreferences
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -82,14 +81,10 @@ class TencentTTSController(context: Context) {
         private const val CONTENT_TYPE = "application/json; charset=utf-8"
         private const val HOST = "$SERVICE.tencentcloudapi.com"
 
-        private const val KEY_SECRET_ID = "flutter.secretId"
-        private const val KEY_SECRET_KEY = "flutter.secretKey"
-        private const val KEY_VOICE_TYPE = "flutter.voiceType"
-
         private val client: OkHttpClient = OkHttpClient()
     }
 
-    private val prefs: SharedPreferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+    private val store: Store = Store(context)
 
     private fun doRequest(
         body: SynthesizeRequest,
@@ -149,7 +144,7 @@ class TencentTTSController(context: Context) {
             $hashedCanonicalRequest
         """.trimIndent()
 
-        val secretKey = prefs.getString(KEY_SECRET_KEY, null)
+        val secretKey = store.getSecretKey()
         val signature = "TC3$secretKey"
             .toByteArray(StandardCharsets.UTF_8)
             .hmacSha256(date)
@@ -158,7 +153,7 @@ class TencentTTSController(context: Context) {
             .hmacSha256(stringToSign)
             .toHexString()
 
-        val secretId = prefs.getString(KEY_SECRET_ID, null)
+        val secretId = store.getSecretId()
         return "TC3-HMAC-SHA256 Credential=$secretId/$credentialScope, SignedHeaders=content-type;host, Signature=$signature"
     }
 
@@ -167,7 +162,7 @@ class TencentTTSController(context: Context) {
         val response = doRequest(SynthesizeRequest(
             text = text,
             sessionId = Uuid.random().toString(),
-            voiceType = prefs.getLong(KEY_VOICE_TYPE, 0)
+            voiceType = store.getVoiceType()
         ))
         val error = response.response.error
         if (error != null) {
