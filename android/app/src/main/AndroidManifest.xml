@@ -26,8 +26,22 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-             <intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.CheckTtsData"
+            android:exported="true"
+            android:label="CheckTtsData">
+            <intent-filter>
                 <action android:name="android.speech.tts.engine.CHECK_TTS_DATA" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.GetSampleText"
+            android:exported="true"
+            android:label="GetSampleText">
+            <intent-filter>
+                <action android:name="android.speech.tts.engine.GET_SAMPLE_TEXT" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
