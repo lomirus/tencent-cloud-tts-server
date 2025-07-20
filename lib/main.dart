@@ -102,6 +102,84 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             const ListGroupTitle("语音"),
+            ListTile(
+              leading: const Icon(Icons.people),
+              title: const Text("音色"),
+              subtitle: Text(
+                settings.voiceType.toString(),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.filter_list),
+                onPressed: () async {
+                  showModalBottomSheet(
+                    context: context,
+                    showDragHandle: true,
+                    builder: (BuildContext context) {
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    const Text('性别'),
+                                    const SizedBox(width: 20),
+                                    Expanded(
+                                      child: Wrap(
+                                        spacing: 8.0,
+                                        children: const [
+                                          Chip(label: Text('男')),
+                                          Chip(label: Text('女')),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text('品质'),
+                                    const SizedBox(width: 20),
+                                    Expanded(
+                                      child: Wrap(
+                                        spacing: 8.0,
+                                        children: const [
+                                          Chip(label: Text('标准音色')),
+                                          Chip(label: Text('精品音色')),
+                                          Chip(label: Text('大模型音色')),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            Wrap(
+                              spacing: 8.0,
+                              children: const [
+                                Chip(label: Text('P1')),
+                                Chip(label: Text('P2')),
+                                Chip(label: Text('P3')),
+                                Chip(label: Text('P4')),
+                                Chip(label: Text('P5')),
+                                Chip(label: Text('P6')),
+                                Chip(label: Text('P7')),
+                                Chip(label: Text('P8')),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
             PopupMenuButton(
               initialValue: settings.voiceType,
               onSelected: (int id) => settings.voiceType = id,
