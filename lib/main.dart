@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tencent_cloud_tts_server/data/voice_types.dart';
 import 'package:tencent_cloud_tts_server/utils/store.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 
@@ -159,18 +160,20 @@ class _MyHomePageState extends State<MyHomePage> {
                               ],
                             ),
                             const SizedBox(height: 24),
-                            Wrap(
-                              spacing: 8.0,
-                              children: const [
-                                Chip(label: Text('P1')),
-                                Chip(label: Text('P2')),
-                                Chip(label: Text('P3')),
-                                Chip(label: Text('P4')),
-                                Chip(label: Text('P5')),
-                                Chip(label: Text('P6')),
-                                Chip(label: Text('P7')),
-                                Chip(label: Text('P8')),
-                              ],
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Wrap(
+                                  spacing: 8.0,
+                                  children: voiceTypes
+                                      .map(
+                                        (voiceType) => ChoiceChip(
+                                          label: Text(voiceType.name),
+                                          selected: false,
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              ),
                             ),
                           ],
                         ),
