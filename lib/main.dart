@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tencent_cloud_tts_server/data/voice_types.dart';
 import 'package:tencent_cloud_tts_server/utils/store.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
+import 'package:tencent_cloud_tts_server/widgets/voice_type_selector.dart';
 
 import 'widgets/list_group_title.dart';
 
@@ -119,65 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     context: context,
                     showDragHandle: true,
                     builder: (BuildContext context) {
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    const Text('性别'),
-                                    const SizedBox(width: 20),
-                                    Expanded(
-                                      child: Wrap(
-                                        spacing: 8.0,
-                                        children: const [
-                                          Chip(label: Text('男')),
-                                          Chip(label: Text('女')),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    const Text('品质'),
-                                    const SizedBox(width: 20),
-                                    Expanded(
-                                      child: Wrap(
-                                        spacing: 8.0,
-                                        children: const [
-                                          Chip(label: Text('标准音色')),
-                                          Chip(label: Text('精品音色')),
-                                          Chip(label: Text('大模型音色')),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 24),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                child: Wrap(
-                                  spacing: 8.0,
-                                  children: voiceTypes
-                                      .map(
-                                        (voiceType) => ChoiceChip(
-                                          label: Text(voiceType.name),
-                                          selected: false,
-                                        ),
-                                      )
-                                      .toList(),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
+                      return VoiceTypeSelector();
                     },
                   );
                 },
