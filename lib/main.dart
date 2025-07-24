@@ -125,25 +125,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
             ),
-            PopupMenuButton(
-              initialValue: settings.voiceType,
-              onSelected: (int id) => settings.voiceType = id,
-              offset: const Offset(1, 0),
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
-                const PopupMenuItem(value: 1001, child: Text('1001')),
-                const PopupMenuItem(value: 1004, child: Text('1004')),
-              ],
-              child: ListTile(
-                leading: const Icon(Icons.people),
-                title: const Text("音色"),
-                subtitle: Text(
-                  settings.voiceType.toString(),
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),

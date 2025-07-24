@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tencent_cloud_tts_server/data/voice_types.dart';
+import 'package:tencent_cloud_tts_server/utils/store.dart';
 import 'package:tencent_cloud_tts_server/utils/voice_type.dart';
 
 class VoiceTypeSelector extends StatefulWidget {
@@ -19,6 +21,7 @@ class _VoiceTypeSelectorState extends State<VoiceTypeSelector> {
 
   @override
   Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Column(
@@ -133,7 +136,14 @@ class _VoiceTypeSelectorState extends State<VoiceTypeSelector> {
                     .map(
                       (voiceType) => ChoiceChip(
                         label: Text(voiceType.name),
-                        selected: false,
+                        selected: settings.voiceType == voiceType.id,
+                        onSelected: (newSelected) {
+                          if (newSelected) {
+                            setState(() {
+                              settings.voiceType = voiceType.id;
+                            });
+                          }
+                        },
                       ),
                     )
                     .toList(),
