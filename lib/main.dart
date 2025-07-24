@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tencent_cloud_tts_server/data/voice_types.dart';
 import 'package:tencent_cloud_tts_server/utils/store.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
+import 'package:tencent_cloud_tts_server/utils/voice_type.dart';
 import 'package:tencent_cloud_tts_server/widgets/voice_type_selector.dart';
 
 import 'widgets/list_group_title.dart';
@@ -107,7 +109,17 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: const Icon(Icons.people),
               title: const Text("音色"),
               subtitle: Text(
-                settings.voiceType.toString(),
+                (() {
+                  final vt = voiceTypes.firstWhere(
+                    (voiceType) => voiceType.id == settings.voiceType,
+                  );
+                  final sex = switch (vt.sex) {
+                    Sex.male => "男",
+                    Sex.female => "女",
+                  };
+                  final quality = vt.quality.name;
+                  return "${vt.name} ($sex, $quality, ${vt.id})";
+                })(),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
