@@ -1,4 +1,14 @@
-enum Sex { male, female }
+enum Sex {
+  male,
+  female;
+
+  String get name {
+    return switch (this) {
+      male => "男",
+      female => "女",
+    };
+  }
+}
 
 enum Quality {
   standard,

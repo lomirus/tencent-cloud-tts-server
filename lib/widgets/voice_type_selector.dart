@@ -36,34 +36,23 @@ class _VoiceTypeSelectorState extends State<VoiceTypeSelector> {
                   Expanded(
                     child: Wrap(
                       spacing: 8.0,
-                      children: [
-                        FilterChip(
-                          label: Text('男'),
-                          selected: _sexes.contains(Sex.male),
-                          onSelected: (enabled) {
-                            setState(() {
-                              if (enabled) {
-                                _sexes.add(Sex.male);
-                              } else {
-                                _sexes.remove(Sex.male);
-                              }
-                            });
-                          },
-                        ),
-                        FilterChip(
-                          label: Text('女'),
-                          selected: _sexes.contains(Sex.female),
-                          onSelected: (enabled) {
-                            setState(() {
-                              if (enabled) {
-                                _sexes.add(Sex.female);
-                              } else {
-                                _sexes.remove(Sex.female);
-                              }
-                            });
-                          },
-                        ),
-                      ],
+                      children: Sex.values
+                          .map(
+                            (sex) => FilterChip(
+                              label: Text(sex.name),
+                              selected: _sexes.contains(sex),
+                              onSelected: (enabled) {
+                                setState(() {
+                                  if (enabled) {
+                                    _sexes.add(sex);
+                                  } else {
+                                    _sexes.remove(sex);
+                                  }
+                                });
+                              },
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
                 ],
@@ -75,47 +64,23 @@ class _VoiceTypeSelectorState extends State<VoiceTypeSelector> {
                   Expanded(
                     child: Wrap(
                       spacing: 8.0,
-                      children: [
-                        FilterChip(
-                          label: Text('标准音色'),
-                          selected: _qualities.contains(Quality.standard),
-                          onSelected: (enabled) {
-                            setState(() {
-                              if (enabled) {
-                                _qualities.add(Quality.standard);
-                              } else {
-                                _qualities.remove(Quality.standard);
-                              }
-                            });
-                          },
-                        ),
-                        FilterChip(
-                          label: Text('精品音色'),
-                          selected: _qualities.contains(Quality.premium),
-                          onSelected: (enabled) {
-                            setState(() {
-                              if (enabled) {
-                                _qualities.add(Quality.premium);
-                              } else {
-                                _qualities.remove(Quality.premium);
-                              }
-                            });
-                          },
-                        ),
-                        FilterChip(
-                          label: Text('大模型音色'),
-                          selected: _qualities.contains(Quality.largeModel),
-                          onSelected: (enabled) {
-                            setState(() {
-                              if (enabled) {
-                                _qualities.add(Quality.largeModel);
-                              } else {
-                                _qualities.remove(Quality.largeModel);
-                              }
-                            });
-                          },
-                        ),
-                      ],
+                      children: Quality.values
+                          .map(
+                            (quality) => FilterChip(
+                              label: Text(quality.name),
+                              selected: _qualities.contains(quality),
+                              onSelected: (enabled) {
+                                setState(() {
+                                  if (enabled) {
+                                    _qualities.add(quality);
+                                  } else {
+                                    _qualities.remove(quality);
+                                  }
+                                });
+                              },
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
                 ],
