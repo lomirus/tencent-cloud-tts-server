@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tencent_cloud_tts_server/data/voice_types.dart';
 
 class SettingsProvider extends ChangeNotifier {
   static const String _keySecretId = 'secretId';
@@ -50,7 +51,7 @@ class SettingsProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final secretId = prefs.getString(_keySecretId) ?? "";
     final secretKey = prefs.getString(_keySecretKey) ?? "";
-    final voiceType = prefs.getInt(_keyVoiceType) ?? 0;
+    final voiceType = prefs.getInt(_keyVoiceType) ?? voiceTypes[0].id;
     return SettingsProvider(
       secretId: secretId,
       secretKey: secretKey,
